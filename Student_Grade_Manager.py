@@ -1,10 +1,11 @@
 # Student Grade Manager
-# ---------------------
+# With Error Handling
 
 students = {}
 
 
 def calculate_grade(mark):
+    """Calculate grade based on the student's mark."""
     if mark >= 90:
         return "A"
     elif mark >= 80:
@@ -18,102 +19,136 @@ def calculate_grade(mark):
 
 
 def add_student():
-    name = input("Enter student name: ").strip()
+    """Add a student with error handling."""
 
-    if not name:
-        print("Error: Student name cannot be empty.")
-        return
+    try:
+        name = input("Enter student name: ").strip()
 
-    if name in students:
-        print("Warning: Student already exists.")
-        return
+        # Check for empty name
+        if not name:
+            raise ValueError("Student name cannot be empty.")
 
-    while True:
-        try:
-            mark = float(input("Enter mark (0-100): "))
+        # Check for duplicate name
+        if name in students:
+            print("Warning: A student with this name already exists.")
+            return
 
-            if mark < 0 or mark > 100:
-                print("Error: Mark must be between 0 and 100.")
-                continue
+        # Get mark
+        mark_input = input("Enter mark (0-100): ").strip()
 
-            break
+        # Convert mark to a number
+        mark = float(mark_input)
 
-        except ValueError:
-            print("Error: Please enter a valid number.")
+        # Validate mark range
+        if mark < 0 or mark > 100:
+            raise ValueError("Mark must be between 0 and 100.")
 
-    grade = calculate_grade(mark)
+        # Calculate grade
+        grade = calculate_grade(mark)
 
-    students[name] = {
-        "mark": mark,
-        "grade": grade
-    }
+        # Store student information
+        students[name] = {
+            "mark": mark,
+            "grade": grade
+        }
 
-    print(f"Student '{name}' added successfully!")
+        print(f"Student '{name}' added successfully!")
+
+    except ValueError as error:
+        print(f"Error: {error}")
+
+    except Exception as error:
+        print(f"Unexpected error: {error}")
 
 
 def display_students():
-    if not students:
-        print("No students available.")
-        return
+    """Display all students in a formatted table."""
 
-    print("\n" + "=" * 45)
-    print(f"{'Name':<20}{'Mark':<10}{'Grade':<10}")
-    print("-" * 45)
+    try:
+        if not students:
+            print("No students available.")
+            return
 
-    for name, details in students.items():
-        print(
-            f"{name:<20}"
-            f"{details['mark']:<10.2f}"
-            f"{details['grade']:<10}"
-        )
+        print("\n" + "=" * 45)
+        print(f"{'Name':<20}{'Mark':<10}{'Grade':<10}")
+        print("-" * 45)
 
-    print("=" * 45)
+        for name, details in students.items():
+            print(
+                f"{name:<20}"
+                f"{details['mark']:<10.2f}"
+                f"{details['grade']:<10}"
+            )
+
+        print("=" * 45)
+
+    except Exception as error:
+        print(f"Error displaying students: {error}")
 
 
 def show_statistics():
-    if not students:
-        print("No student data available.")
-        return
+    """Display class statistics."""
 
-    marks = [details["mark"] for details in students.values()]
+    try:
+        if not students:
+            print("No student data available.")
+            return
 
-    average = sum(marks) / len(marks)
-    highest = max(marks)
-    lowest = min(marks)
+        marks = [details["mark"] for details in students.values()]
 
-    print("\nClass Statistics")
-    print("-" * 30)
-    print(f"Class Average : {average:.2f}")
-    print(f"Highest Mark  : {highest:.2f}")
-    print(f"Lowest Mark   : {lowest:.2f}")
+        average = sum(marks) / len(marks)
+        highest = max(marks)
+        lowest = min(marks)
+
+        print("\n===== CLASS STATISTICS =====")
+        print(f"Class Average : {average:.2f}")
+        print(f"Highest Mark  : {highest:.2f}")
+        print(f"Lowest Mark   : {lowest:.2f}")
+
+    except ZeroDivisionError:
+        print("Error: Cannot calculate the average because there are no marks.")
+
+    except Exception as error:
+        print(f"Error calculating statistics: {error}")
 
 
 def main():
+    """Main menu of the Student Grade Manager."""
+
     while True:
-        print("\n===== STUDENT GRADE MANAGER =====")
-        print("1. Add Student")
-        print("2. Display Students")
-        print("3. Show Class Statistics")
-        print("4. Exit")
+        try:
+            print("\n===== STUDENT GRADE MANAGER =====")
+            print("1. Add Student")
+            print("2. Display Students")
+            print("3. Show Class Statistics")
+            print("4. Exit")
 
-        choice = input("Enter your choice (1-4): ")
+            choice = input("Enter your choice (1-4): ").strip()
 
-        if choice == "1":
-            add_student()
+            if choice == "1":
+                add_student()
 
-        elif choice == "2":
-            display_students()
+            elif choice == "2":
+                display_students()
 
-        elif choice == "3":
-            show_statistics()
+            elif choice == "3":
+                show_statistics()
 
-        elif choice == "4":
-            print("Thank you for using Student Grade Manager!")
+            elif choice == "4":
+                print("Thank you for using Student Grade Manager!")
+                break
+
+            else:
+                print("Error: Invalid choice. Please enter a number from 1 to 4.")
+
+        except KeyboardInterrupt:
+            print("\nProgram interrupted by user.")
             break
 
-        else:
-            print("Error: Invalid choice. Please select 1-4.")
+        except Exception as error:
+            print(f"Unexpected error: {error}")
 
 
-# Start the program
-main()
+# Run the program
+if __name__ == "__main__":
+    main()
